@@ -127,7 +127,7 @@ class Dataset(object):
 uci_base_url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/'
 
 
-#@add_regression
+@add_regression
 class Concrete(Dataset):
     N, D, name = 1030, 8, 'concrete'
     url = uci_base_url + 'concrete/compressive/Concrete_Data.xls'
@@ -138,7 +138,7 @@ class Concrete(Dataset):
 
 
 
-#@add_regression
+@add_regression
 class Power(Dataset):
     N, D, name = 9568, 4, 'power'
     url = uci_base_url + '00294/CCPP.zip'
@@ -165,18 +165,18 @@ class WilsonDataset(Dataset):
         return data[:, :-1], data[:, -1, None]
 
 
-#@add_regression
+@add_regression
 class Wilson_airfoil(WilsonDataset):
     name, N, D = 'wilson_airfoil', 1503, 5
 
 
 
-#@add_regression
+@add_regression
 class Wilson_parkinsons(WilsonDataset):
     name, N, D = 'wilson_parkinsons', 5875, 20
 
 
-#@add_regression
+@add_regression
 class Wilson_kin40k(WilsonDataset):
     name, N, D = 'wilson_kin40k', 40000, 8
 
@@ -195,98 +195,3 @@ def get_regression_data(name, *args, **kwargs):
 
 
 
-
-class Classification(Dataset):
-    def preprocess_data(self, X, Y):
-        X, self.X_mean, self.X_std = normalize(X)
-        return X, Y
-
-    @property
-    def needs_download(self):
-        if os.path.isfile(os.path.join(DATA_PATH, 'classification_data', 'iris', 'iris_R.dat')):
-            return False
-        else:
-            return True
-
-    def download(self):
-        logging.info('donwloading classification data. WARNING: downloading 195MB file'.format(self.name))
-
-        filename = os.path.join(DATA_PATH, 'classification_data.tar.gz')
-
-        url = 'http://persoal.citius.usc.es/manuel.fernandez.delgado/papers/jmlr/data.tar.gz'
-        with urlopen(url) as response, open(filename, 'wb') as out_file:
-            data = response.read()
-            out_file.write(data)
-
-        import tarfile
-        tar = tarfile.open(filename)
-        tar.extractall(path=os.path.join(DATA_PATH, 'classification_data'))
-        tar.close()
-
-        logging.info('finished donwloading {} data'.format(self.name))
-
-
-    def read_data(self, components = None):
-        datapath = os.path.join(DATA_PATH, 'classification_data', self.name, self.name + '_R.dat')
-        if os.path.isfile(datapath):
-            data = np.array(pandas.read_csv(datapath, header=0, delimiter='\t').values).astype(float)
-        else:
-            data_path1 = os.path.join(DATA_PATH, 'classification_data', self.name, self.name + '_train_R.dat')
-            data1 = np.array(pandas.read_csv(data_path1, header=0, delimiter='\t').values).astype(float)
-
-            data_path2 = os.path.join(DATA_PATH, 'classification_data', self.name, self.name + '_test_R.dat')
-            data2 = np.array(pandas.read_csv(data_path2, header=0, delimiter='\t').values).astype(float)
-
-            data = np.concatenate([data1, data2], 0)
-
-        return data[:, :-1], data[:, -1].reshape(-1, 1)
-
-
-rescale = lambda x, a, b: b[0] + (b[1] - b[0]) * x / (a[1] - a[0])
-
-
-
-
-
-
-mnist_datasets = [['MNIST', 70000, 15, 10],
-                ['FASHION_MNIST',70000,15,10]]
-
-for name, N, D, K in mnist_datasets:
-    @add_classficiation
-    class MNIST(Classification):
-        name, N, D, K = name, N, D, K
-
-        def read_data(self, components = 15):
-            """Reads data from tf.keras and concatenates training and testing sets for randomisation
-            - Creates features as prinicipal components (PCA) of pixel values  
-            - Output: (feature matrix: 700000 X n_components , labels vector(ordinal) : 70000 x 1 
-            """
-            
-            if name == 'FASHION_MNIST':
-                (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.fashion_mnist.load_data()
-            else:
-                (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
-
-            train_images = train_images / 255.0
-            test_images = test_images / 255.0
-            train_images = np.reshape(train_images, (60000, 784))
-            test_images = np.reshape(test_images, (10000, 784))
-            train_images = tf.concat([train_images, test_images], 0)
-            train_labels = tf.concat([train_labels, test_labels], 0)
-            #Uses sklearn PCA
-            pca = PCA(n_components = components)
-            pca.fit(train_images)
-            train_image_pca = pca.transform(train_images)
-            train_labels = tf.dtypes.cast(train_labels, tf.int64)
-            train_labels = tf.reshape(train_labels, [-1, 1])
-
-            return train_image_pca, train_labels.numpy()
-
-        
-classification_datasets = list(_ALL_CLASSIFICATION_DATATSETS.keys())
-classification_datasets.sort()
-
-
-def get_classification_data(name, *args, **kwargs):
-    return _ALL_CLASSIFICATION_DATATSETS[name](*args, **kwargs)
