@@ -21,7 +21,24 @@ Along with other baselines:
 * Uniform
 * No-weights
 
-## Our paper
+## How to Run Experiments:
+Please move into Code/bayesian_benchmarks_modular and run:
+* python -m pytest bayesian_benchmarks/scripts/run_all_pytest.py -n X
+where X is the number of experiments ran in parallel
+
+Results can be viewed in Code/bayesian_benchmarks_modular/bayesian_benchmarks/results/view_results.ipynb
+
+## Dependencies:
+* Tensorflow 2.0
+* GPflow 2.0.1
+* Numpy 0.18.1
+* Pandas 0.25.1
+* pytest-xdist
+* tqdm 4.32.1
+* sklearn 0.21.2
+
+
+## Our Paper
 This repository complements our paper:
 
 [1] Healing Products of Gaussian Process Experts, Samuel Cohen, Rendani Mbuvha, Tshilidzi Marwala, Marc Deisenroth
