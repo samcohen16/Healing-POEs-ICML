@@ -42,4 +42,4 @@ Results can be viewed in Code/bayesian_benchmarks_modular/bayesian_benchmarks/re
 ## Our Paper
 This repository complements our paper:
 
-[1] Healing Products of Gaussian Process Experts, Samuel Cohen, Rendani Mbuvha, Tshilidzi Marwala, Marc Deisenroth
+[1] Healing Products of Gaussian Process Experts, Samuel Cohen, Rendani Mbuvha, Tshilidzi Marwala, Marc Deisenroth, International Conference in Machine Learning 2020
