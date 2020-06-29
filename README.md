@@ -24,6 +24,7 @@ Along with other baselines:
 ## How to Run Experiments:
 Please move into Code/bayesian_benchmarks_modular and run:
 * python -m pytest bayesian_benchmarks/scripts/run_all_pytest.py -n X
+
 where X is the number of experiments ran in parallel
 
 Results can be viewed in Code/bayesian_benchmarks_modular/bayesian_benchmarks/results/view_results.ipynb
