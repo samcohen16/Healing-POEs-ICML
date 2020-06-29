@@ -20,7 +20,7 @@ from bayesian_benchmarks.database_utils import Database
 all_regression_models = [
     'expert_100_clustering',
     'gp',
-    'linear',
+    'linear'
       ]
 
 class ConvertToNamespace(object):
