@@ -1,6 +1,6 @@
-## HEALING PRODUCT OF GAUSSIAN PROCESS EXPERTS - ICML 2020
+## HEALING PRODUCTS OF GAUSSIAN PROCESS EXPERTS - ICML 2020
 
-In this repository can be found implementation of the aggregations and weighting approaches for Gaussian Process PoEs proposed in our paper [1], along with several previously proposed PoEs.
+In this repository can be found implementation of the aggregations and weighting approaches for products of Gaussian process experts proposed in our paper [1], along with several previously proposed PoEs.
 
 ## Aggregation Methods:
 
