@@ -26,7 +26,7 @@ def compute_weights(mu_s, var_s, power, weighting, prior_var=None, softmax=False
         weight_matrix = tf.math.exp(-power * var_s)
 
     if weighting == 'wass':
-        wass = mu_s ** 2 + (var_s - prior_var)**2     
+        wass = mu_s**2 + (var_s - prior_var)**2
         
         if softmax == True:
             weight_matrix = tf.math.exp(power * wass)
@@ -62,7 +62,7 @@ def normalize_weights(weight_matrix):
     sum_weights = tf.reduce_sum(weight_matrix, axis=0)
     weight_matrix = weight_matrix / sum_weights
     
-    return(weight_matrix)
+    return weight_matrix
 
     
 def regression_model(points_per_experts, partition_type):
@@ -143,7 +143,7 @@ def regression_model(points_per_experts, partition_type):
     """
             
             opt_logs = self.opt.minimize(self.tot_negloglike,
-                                         (*self.kern.trainable_variables,*self.likelihood.trainable_variables),
+                                         (*self.kern.trainable_variables,   *self.likelihood.trainable_variables),
                                          options=dict(maxiter=max_iter), compile=False)
         
         def predict(self, xt_s, mu_s, var_s):
