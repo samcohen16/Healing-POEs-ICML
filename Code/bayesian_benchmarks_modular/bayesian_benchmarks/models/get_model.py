@@ -20,12 +20,10 @@ def get_regression_model(name):
         
 all_regression_models=[]
 
+all_regression_models.append('expert_100_clustering_minibatching')
 all_regression_models.append('expert_100_clustering')
+all_regression_models.append('expert_100_random_minibatching')
 all_regression_models.append('expert_100_random')
-all_regression_models.append('expert_200_clustering')
-all_regression_models.append('expert_200_random')
-all_regression_models.append('expert_500_clustering')
-all_regression_models.append('expert_500_random')
 all_regression_models.append('gp')
 all_regression_models.append('linear')
 

@@ -18,7 +18,7 @@ from bayesian_benchmarks.database_utils import Database
 
 
 all_regression_models = [
-    'expert_100_clustering',
+    'expert_100_clustering_minibatching',
     #'gp',
     'linear'
       ]

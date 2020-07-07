@@ -137,7 +137,19 @@ class Concrete(Dataset):
         return data[:, :-1], data[:, -1].reshape(-1, 1)
 
 
+#@add_regression
+class Airline(Dataset):
+    N, D, name = 800000, 7, 'airline'
+    url = '/DelayedFlights_all.csv'
 
+    def read_data(self):
+        print(self.datapath)
+        
+        data=pd.read_csv(self.datapath)
+        data=data[['DayofMonth','DayOfWeek','Month','AirTime','DepTime','ArrTime','Distance','ArrDelay']].dropna().iloc[:800000,:].values
+
+        return data[:, :-1], data[:, -1].reshape(-1, 1)    
+    
 @add_regression
 class Power(Dataset):
     N, D, name = 9568, 4, 'power'
