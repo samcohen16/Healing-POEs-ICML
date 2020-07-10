@@ -22,10 +22,12 @@ Along with other baselines:
 * No-weights
 
 ## How to Run Experiments:
+Unzip the airline dataset Code/bayesian_benchmarks_modular/bayesian_benchmarks/data/airline/DelayedFlights_all.csv.zip
+
 Please move into Code/bayesian_benchmarks_modular and run:
 * python -m pytest bayesian_benchmarks/scripts/run_all_pytest.py -n X
 
-where X is the number of experiments ran in parallel
+where X is the number of experiments ran in parallel.
 
 Results can be viewed in Code/bayesian_benchmarks_modular/bayesian_benchmarks/results/view_results.ipynb
 
