@@ -11,18 +11,22 @@ python -m pytest bayesian_benchmarks/scripts/run_all_pytest.py -n 32
 import pytest
 
 from bayesian_benchmarks.tasks.regression import run as run_regression
+from bayesian_benchmarks.tasks.classification import run as run_classification
 
 
-from bayesian_benchmarks.data import regression_datasets
+from bayesian_benchmarks.data import regression_datasets, classification_datasets
 from bayesian_benchmarks.database_utils import Database
 
 
 all_regression_models = [
-    'expert_100_clustering',
+    #'expert_100_clustering',
     #'gp',
-    'linear'
+    #'linear'
       ]
-
+all_classification_models = [
+    'expert_500_random',
+    #'expert_800_clustering'
+]
 class ConvertToNamespace(object):
     def __init__(self, adict):
         adict.update({'seed':0,
@@ -48,4 +52,13 @@ def test_run_all_regression(model, dataset, split):
     if check_needs_run('regression', d):
         run_regression(d, is_test=False)
 
+@pytest.mark.parametrize('dataset', classification_datasets)
+@pytest.mark.parametrize('model', all_classification_models)
+@pytest.mark.parametrize('split', range(10))
+def test_classification(model, dataset, split):
+    d = {'dataset':dataset,
+         'model' :  model,
+         'split' : split}
+    if check_needs_run('classification', d):
+        run_classification(ConvertToNamespace(d), is_test=False)
 
