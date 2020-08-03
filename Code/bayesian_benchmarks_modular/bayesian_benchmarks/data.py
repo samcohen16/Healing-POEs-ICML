@@ -27,6 +27,9 @@ from sklearn.decomposition import PCA
 from urllib.request import urlopen
 logging.getLogger().setLevel(logging.INFO)
 import zipfile
+import gzip
+import struct
+import array
 
 from bayesian_benchmarks.paths import DATA_PATH, BASE_SEED
 
@@ -196,14 +199,106 @@ class Wilson_kin40k(WilsonDataset):
 class Wilson_protein(WilsonDataset):
     name, N, D = 'wilson_protein', 45730, 9
 
+    
+    
+class Classification(Dataset):
+    def preprocess_data(self, X, Y):
+        X, self.X_mean, self.X_std = normalize(X)
+        return X, Y
+
+    @property
+    def needs_download(self):
+        if os.path.isfile(os.path.join(DATA_PATH, 'classification_data', 'iris', 'iris_R.dat')):
+            return False
+        else:
+            return True
+    print(1)
+    def download(self):
+        pass
+
+
+    def read_data(self, components = None):
+        datapath = os.path.join(DATA_PATH, 'classification_data', self.name, self.name + '_R.dat')
+        if os.path.isfile(datapath):
+            data = np.array(pandas.read_csv(datapath, header=0, delimiter='\t').values).astype(float)
+        else:
+            data_path1 = os.path.join(DATA_PATH, 'classification_data', self.name, self.name + '_train_R.dat')
+            data1 = np.array(pandas.read_csv(data_path1, header=0, delimiter='\t').values).astype(float)
+
+            data_path2 = os.path.join(DATA_PATH, 'classification_data', self.name, self.name + '_test_R.dat')
+            data2 = np.array(pandas.read_csv(data_path2, header=0, delimiter='\t').values).astype(float)
+
+            data = np.concatenate([data1, data2], 0)
+
+        return data[:, :-1], data[:, -1].reshape(-1, 1)
+
+
+rescale = lambda x, a, b: b[0] + (b[1] - b[0]) * x / (a[1] - a[0])
+
+
+@add_classficiation
+class MNIST(Classification):
+
+     name = 'MNIST'
+     N = 70000
+     D = 20
+     K = 10
+     #needs_download = False
+    
+   
+     
+
+
+     def read_data(self, components = 20):
+        """Reads data from tf.keras and concatenates training and testing sets for randomisation
+        - Creates features as prinicipal components (PCA) of pixel values  
+        - Output: (feature matrix: 700000 X n_components , labels vector(ordinal) : 70000 x 1
+
+        """
+        def parse_images(filename):
+
+            with gzip.open(filename, 'rb') as fh:
+                magic, num_data, rows, cols = struct.unpack(">IIII", fh.read(16))
+                return np.array(array.array("B", fh.read()), dtype=np.uint8).reshape(num_data, rows, cols)
+
+        def parse_labels(filename):
+            with gzip.open(filename, 'rb') as fh:
+                magic, num_data = struct.unpack(">II", fh.read(8))
+                return np.array(array.array("B", fh.read()), dtype=np.uint8)
+           
+        train_images = parse_images('./bayesian_benchmarks/data/mnist/train-images-idx3-ubyte.gz')
+        train_labels = parse_labels('./bayesian_benchmarks/data/mnist/train-labels-idx1-ubyte.gz')
+        test_images  = parse_images('./bayesian_benchmarks/data/mnist/t10k-images-idx3-ubyte.gz')
+        test_labels  = parse_labels('./bayesian_benchmarks/data/mnist/t10k-labels-idx1-ubyte.gz')
+
+        train_images = train_images / 255.0
+        test_images = test_images / 255.0
+        train_images = np.reshape(train_images, (60000, 784))
+        test_images = np.reshape(test_images, (10000, 784))
+        train_images = tf.concat([train_images, test_images], 0)
+        train_labels = tf.concat([train_labels, test_labels], 0)
+ 
+        pca = PCA(n_components = components)
+        pca.fit(train_images)
+        train_image_pca = pca.transform(train_images)
+        train_labels = tf.dtypes.cast(train_labels, tf.int64)
+        train_labels = tf.reshape(train_labels, [-1, 1])
+
+        return train_image_pca, train_labels.numpy()
+
+
 ##########################
 
 regression_datasets = list(_ALL_REGRESSION_DATATSETS.keys())
 regression_datasets.sort()
 
+classification_datasets = list(_ALL_CLASSIFICATION_DATATSETS.keys())
+classification_datasets.sort()
+
 def get_regression_data(name, *args, **kwargs):
     return _ALL_REGRESSION_DATATSETS[name](*args, **kwargs)
 
 
-
+def get_classification_data(name, *args, **kwargs):
+    return _ALL_CLASSIFICATION_DATATSETS[name](*args, **kwargs)
 
